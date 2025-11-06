@@ -1,0 +1,45 @@
+---
+title: 'Scheduled Publishing'
+description: 'Schedule blog posts for future publication'
+---
+
+## Using Vercel Cron Jobs
+
+Create `vercel.json`:
+
+```json
+{
+  "crons": [{
+    "path": "/api/cron/publish-scheduled",
+    "schedule": "0 * * * *"
+  }]
+}
+```
+
+Create endpoint:
+
+```typescript src/app/api/cron/publish-scheduled/route.ts
+export async function GET(request: Request) {
+  // Get scheduled blogs from your database
+  const scheduledBlogs = await getScheduledBlogs();
+  
+  const now = new Date();
+  const toPublish = scheduledBlogs.filter(b => 
+    new Date(b.scheduledDate) <= now
+  );
+  
+  if (toPublish.length > 0) {
+    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/publish-blog`, {
+      method: 'POST',
+      body: JSON.stringify({ blogs: toPublish })
+    });
+  }
+  
+  return Response.json({ published: toPublish.length });
+}
+```
+
+<Note>
+  Cron jobs are available on Vercel Pro plans and above.
+</Note>
+

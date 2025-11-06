@@ -1,0 +1,89 @@
+---
+title: 'GET /api/publish-blog'
+description: 'Check API configuration status'
+api: 'GET https://your-app.vercel.app/api/publish-blog'
+---
+
+## Description
+
+A simple health check endpoint to verify that the API is properly configured with all required environment variables.
+
+## Request
+
+No parameters required - simple GET request.
+
+```bash
+curl https://your-app.vercel.app/api/publish-blog
+```
+
+## Response
+
+<ResponseField name="status" type="string">
+  API status - always returns "ok"
+</ResponseField>
+
+<ResponseField name="configured" type="boolean">
+  Whether all required environment variables are set
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Human-readable status message
+</ResponseField>
+
+<ResponseField name="requiredEnvVars" type="array">
+  List of required environment variable names
+</ResponseField>
+
+## Examples
+
+<CodeGroup>
+```bash cURL
+curl https://your-app.vercel.app/api/publish-blog
+```
+
+```javascript JavaScript
+const response = await fetch('https://your-app.vercel.app/api/publish-blog');
+const status = await response.json();
+
+if (status.configured) {
+  console.log('API is ready!');
+} else {
+  console.error('API not configured');
+}
+```
+</CodeGroup>
+
+## Response Examples
+
+<CodeGroup>
+```json Configured
+{
+  "status": "ok",
+  "configured": true,
+  "message": "Blog publishing API is ready",
+  "requiredEnvVars": [
+    "GITHUB_TOKEN",
+    "GITHUB_OWNER",
+    "GITHUB_REPO"
+  ]
+}
+```
+
+```json Not Configured
+{
+  "status": "ok",
+  "configured": false,
+  "message": "Blog publishing API requires configuration",
+  "requiredEnvVars": [
+    "GITHUB_TOKEN",
+    "GITHUB_OWNER",
+    "GITHUB_REPO"
+  ]
+}
+```
+</CodeGroup>
+
+<Note>
+  Use this endpoint to verify your deployment before attempting to publish blogs.
+</Note>
+

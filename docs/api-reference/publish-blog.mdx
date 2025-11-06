@@ -1,0 +1,219 @@
+---
+title: 'POST /api/publish-blog'
+description: 'Publish blog posts via API'
+api: 'POST https://your-app.vercel.app/api/publish-blog'
+---
+
+## Request Body
+
+<ParamField body="blogs" type="array" required>
+  Array of blog post objects to publish
+  
+  <Expandable title="Blog Object Properties">
+    <ParamField body="title" type="string" required>
+      Blog post title
+    </ParamField>
+    
+    <ParamField body="description" type="string" required>
+      Brief description for SEO
+    </ParamField>
+    
+    <ParamField body="author" type="string" required>
+      Author name
+    </ParamField>
+    
+    <ParamField body="date" type="string" required>
+      Publication date in YYYY-MM-DD format
+    </ParamField>
+    
+    <ParamField body="content" type="string" required>
+      Markdown content of the blog post
+    </ParamField>
+    
+    <ParamField body="published" type="boolean" default="true">
+      Whether the post should be published
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="mode" type="string" default="separate">
+  Publishing mode: `separate` or `batch`
+  
+  - `separate`: Each blog gets its own PR
+  - `batch`: All blogs in single PR
+</ParamField>
+
+<ParamField body="batchTitle" type="string">
+  Custom title for batch PR (only used when mode is `batch`)
+</ParamField>
+
+<ParamField body="options" type="object">
+  Additional publishing options
+  
+  <Expandable title="Options Properties">
+    <ParamField body="reviewers" type="array">
+      GitHub usernames to request reviews from
+    </ParamField>
+    
+    <ParamField body="labels" type="array">
+      Labels to add to the PR
+    </ParamField>
+    
+    <ParamField body="baseBranch" type="string" default="main">
+      Base branch to create PR against
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the operation succeeded
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of publish results (separate mode)
+  
+  <Expandable title="Result Object">
+    <ResponseField name="success" type="boolean">
+      Whether this blog published successfully
+    </ResponseField>
+    
+    <ResponseField name="message" type="string">
+      Success or error message
+    </ResponseField>
+    
+    <ResponseField name="slug" type="string">
+      Generated URL slug
+    </ResponseField>
+    
+    <ResponseField name="branchName" type="string">
+      Git branch name created
+    </ResponseField>
+    
+    <ResponseField name="prUrl" type="string">
+      Pull request URL
+    </ResponseField>
+    
+    <ResponseField name="prNumber" type="number">
+      Pull request number
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="summary" type="object">
+  Summary of the operation
+</ResponseField>
+
+## Examples
+
+<CodeGroup>
+```bash Single Blog
+curl -X POST https://your-app.vercel.app/api/publish-blog \
+  -H "Content-Type: application/json" \
+  -d '{
+    "blogs": [{
+      "title": "My First Blog Post",
+      "description": "An introduction to blogging",
+      "author": "John Doe",
+      "date": "2025-10-17",
+      "content": "# Hello World\n\nThis is my first post!"
+    }]
+  }'
+```
+
+```bash Multiple Blogs (Separate PRs)
+curl -X POST https://your-app.vercel.app/api/publish-blog \
+  -H "Content-Type: application/json" \
+  -d '{
+    "blogs": [
+      {
+        "title": "First Post",
+        "description": "First description",
+        "author": "Author 1",
+        "date": "2025-10-17",
+        "content": "# First Post\n\nContent..."
+      },
+      {
+        "title": "Second Post",
+        "description": "Second description",
+        "author": "Author 2",
+        "date": "2025-10-18",
+        "content": "# Second Post\n\nContent..."
+      }
+    ],
+    "options": {
+      "labels": ["blog", "content"],
+      "reviewers": ["editor"]
+    }
+  }'
+```
+
+```bash Batch Mode (Single PR)
+curl -X POST https://your-app.vercel.app/api/publish-blog \
+  -H "Content-Type: application/json" \
+  -d '{
+    "mode": "batch",
+    "batchTitle": "Weekly Blog Posts",
+    "blogs": [
+      { "title": "Post 1", ... },
+      { "title": "Post 2", ... }
+    ]
+  }'
+```
+
+```javascript JavaScript/TypeScript
+const response = await fetch('https://your-app.vercel.app/api/publish-blog', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    blogs: [{
+      title: "My Blog Post",
+      description: "A great post",
+      author: "Jane Doe",
+      date: "2025-10-17",
+      content: "# My Blog Post\n\nContent here..."
+    }],
+    options: {
+      labels: ['blog'],
+      reviewers: ['editor']
+    }
+  })
+});
+
+const data = await response.json();
+console.log(data.results[0].prUrl);
+```
+</CodeGroup>
+
+## Response Examples
+
+<CodeGroup>
+```json Success
+{
+  "success": true,
+  "results": [{
+    "success": true,
+    "message": "Blog post published successfully",
+    "slug": "my-first-blog-post",
+    "branchName": "blog/my-first-blog-post-1729180800000",
+    "prUrl": "https://github.com/username/repo/pull/123",
+    "prNumber": 123
+  }],
+  "summary": {
+    "total": 1,
+    "succeeded": 1,
+    "failed": 0,
+    "mode": "separate"
+  }
+}
+```
+
+```json Error
+{
+  "success": false,
+  "error": "Invalid blog data at index 0. Required fields: title, description, author, date, content"
+}
+```
+</CodeGroup>
+

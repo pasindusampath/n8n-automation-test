@@ -1,0 +1,69 @@
+---
+title: 'Multiple Blogs Example'
+description: 'Publish multiple blog posts (separate PRs)'
+---
+
+## Separate PRs
+
+Each blog gets its own branch and pull request:
+
+```typescript
+const blogs = [
+  {
+    title: "First Post",
+    description: "First description",
+    author: "Author 1",
+    date: "2025-10-17",
+    content: "# First Post\n\nContent..."
+  },
+  {
+    title: "Second Post",
+    description: "Second description",
+    author: "Author 2",
+    date: "2025-10-18",
+    content: "# Second Post\n\nContent..."
+  }
+];
+
+const response = await fetch('/api/publish-blog', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ blogs })
+});
+
+const result = await response.json();
+console.log(`Published ${result.summary.succeeded} of ${result.summary.total}`);
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "success": true,
+      "slug": "first-post",
+      "prUrl": "https://github.com/user/repo/pull/123",
+      "prNumber": 123
+    },
+    {
+      "success": true,
+      "slug": "second-post",
+      "prUrl": "https://github.com/user/repo/pull/124",
+      "prNumber": 124
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "succeeded": 2,
+    "failed": 0,
+    "mode": "separate"
+  }
+}
+```
+
+<Note>
+  Use separate mode when blogs have different authors or need individual review.
+</Note>
+

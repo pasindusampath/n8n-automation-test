@@ -1,0 +1,35 @@
+---
+title: 'Webhook Integration'
+description: 'Trigger publishing via webhooks'
+---
+
+## Create Webhook Endpoint
+
+```typescript src/app/api/webhooks/publish/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  const payload = await request.json();
+  
+  // Transform your webhook data to blog format
+  const blog = {
+    title: payload.title,
+    description: payload.description,
+    author: payload.author,
+    date: new Date().toISOString().split('T')[0],
+    content: payload.content
+  };
+  
+  // Call publish API
+  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/publish-blog`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ blogs: [blog] })
+  });
+  
+  return Response.json(await response.json());
+}
+```
+
+Configure this URL in your CMS webhook settings.
+

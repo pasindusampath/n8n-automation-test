@@ -1,0 +1,110 @@
+{
+  "name": "Blog Publishing System",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373",
+    "anchors": {
+      "from": "#0D9373",
+      "to": "#07C983"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Support",
+      "url": "mailto:support@example.com"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://your-app.vercel.app"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "Examples",
+      "url": "examples"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Documentation",
+      "icon": "book-open-cover",
+      "url": "https://mintlify.com/docs"
+    },
+    {
+      "name": "Community",
+      "icon": "slack",
+      "url": "https://mintlify.com/community"
+    },
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/yourusername/my-app"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "setup"
+      ]
+    },
+    {
+      "group": "Architecture",
+      "pages": [
+        "architecture/overview",
+        "architecture/services",
+        "architecture/workflow"
+      ]
+    },
+    {
+      "group": "Deployment",
+      "pages": [
+        "deployment/vercel",
+        "deployment/environment-variables",
+        "deployment/troubleshooting"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/introduction",
+        "api-reference/publish-blog",
+        "api-reference/check-status"
+      ]
+    },
+    {
+      "group": "Examples",
+      "pages": [
+        "examples/single-blog",
+        "examples/multiple-blogs",
+        "examples/batch-publishing",
+        "examples/integration"
+      ]
+    },
+    {
+      "group": "Advanced",
+      "pages": [
+        "advanced/authentication",
+        "advanced/webhooks",
+        "advanced/scheduled-publishing"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/yourusername/my-app",
+    "twitter": "https://twitter.com/yourusername"
+  }
+}
+

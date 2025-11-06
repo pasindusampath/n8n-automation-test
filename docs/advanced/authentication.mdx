@@ -1,0 +1,45 @@
+---
+title: 'API Authentication'
+description: 'Add authentication to your API endpoint'
+---
+
+## Adding Bearer Token Auth
+
+Modify `src/app/api/publish-blog/route.ts`:
+
+```typescript
+export async function POST(request: NextRequest) {
+  // Check authentication
+  const authHeader = request.headers.get('Authorization');
+  const expectedToken = process.env.API_AUTH_TOKEN;
+  
+  if (expectedToken && authHeader !== `Bearer ${expectedToken}`) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+  
+  // ... rest of your code
+}
+```
+
+## Add Environment Variable
+
+```bash
+API_AUTH_TOKEN=your-secret-token-here
+```
+
+## Client Usage
+
+```typescript
+const response = await fetch('/api/publish-blog', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer your-secret-token-here'
+  },
+  body: JSON.stringify({ blogs: [...] })
+});
+```
+

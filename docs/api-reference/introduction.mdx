@@ -1,0 +1,65 @@
+---
+title: 'API Introduction'
+description: 'Overview of the Blog Publishing API'
+---
+
+## Base URL
+
+<CodeGroup>
+```bash Local Development
+http://localhost:3000/api
+```
+
+```bash Production
+https://your-app.vercel.app/api
+```
+</CodeGroup>
+
+## Authentication
+
+Currently, the API uses GitHub token authentication configured via environment variables. Optional bearer token authentication can be added for additional security.
+
+<Note>
+  All requests must include `Content-Type: application/json` header
+</Note>
+
+## Endpoints
+
+<CardGroup cols={2}>
+  <Card title="Publish Blog" icon="paper-plane" href="/api-reference/publish-blog">
+    `POST /api/publish-blog` - Publish one or more blog posts
+  </Card>
+  <Card title="Check Status" icon="heart-pulse" href="/api-reference/check-status">
+    `GET /api/publish-blog` - Check API configuration status
+  </Card>
+</CardGroup>
+
+## Rate Limits
+
+<Warning>
+  GitHub API has rate limits:
+  - 5,000 requests/hour for authenticated requests
+  - Secondary rate limits for creating content
+  
+  Use batch mode for publishing multiple blogs to avoid hitting limits.
+</Warning>
+
+## Error Responses
+
+All errors follow this format:
+
+```json
+{
+  "success": false,
+  "error": "Error message here",
+  "message": "User-friendly description"
+}
+```
+
+Common HTTP status codes:
+- `200` - Success
+- `207` - Multi-Status (partial success)
+- `400` - Bad Request
+- `401` - Unauthorized
+- `500` - Server Error
+

@@ -1,0 +1,43 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "docs:dev": "cd docs && mint dev",
+    "generate:blogs": "tsx examples/generate-100-blogs.ts",
+    "generate:blogs:10": "tsx examples/generate-10-blogs.ts",
+    "post:blogs": "tsx scripts/post-blogs.ts",
+    "post:blogs:10": "tsx scripts/post-blogs-10.ts",
+    "post:blogs:advanced": "tsx scripts/post-blogs-advanced.ts",
+    "generate-and-post": "npm run generate:blogs && npm run post:blogs",
+    "generate-and-post:10": "npm run generate:blogs:10 && npm run post:blogs:10",
+    "generate-and-post:advanced": "npm run generate:blogs && npm run post:blogs:advanced",
+    "test:api": "tsx scripts/test-api.ts"
+  },
+  "dependencies": {
+    "@content-collections/core": "^0.11.1",
+    "@content-collections/next": "^0.2.8",
+    "@faker-js/faker": "^10.1.0",
+    "@octokit/rest": "^22.0.0",
+    "g": "^2.0.1",
+    "marked": "^16.4.0",
+    "mintlify": "^4.2.173",
+    "next": "15.5.5",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "simple-git": "^3.28.0",
+    "tsx": "^4.20.6",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

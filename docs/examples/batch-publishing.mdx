@@ -1,0 +1,58 @@
+---
+title: 'Batch Publishing Example'
+description: 'Publish multiple blogs in a single PR'
+---
+
+## Batch Mode
+
+Publish multiple blogs in one PR:
+
+```typescript
+const blogs = [
+  { title: "Post 1", description: "...", author: "...", date: "...", content: "..." },
+  { title: "Post 2", description: "...", author: "...", date: "...", content: "..." },
+  { title: "Post 3", description: "...", author: "...", date: "...", content: "..." }
+];
+
+const response = await fetch('/api/publish-blog', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    mode: 'batch',
+    batchTitle: 'Weekly Blog Posts - October 2025',
+    blogs,
+    options: {
+      labels: ['blog', 'batch'],
+      reviewers: ['content-manager']
+    }
+  })
+});
+```
+
+## Response
+
+```json
+{
+  "success": true,
+  "result": {
+    "success": true,
+    "message": "Successfully published 3 blog posts",
+    "branchName": "blog/batch-1729180800000",
+    "prUrl": "https://github.com/user/repo/pull/123",
+    "prNumber": 123
+  },
+  "summary": {
+    "total": 3,
+    "mode": "batch"
+  }
+}
+```
+
+<Check>
+  All three blog posts are in a single PR, making review easier!
+</Check>
+
+<Note>
+  Batch mode is more efficient and avoids GitHub rate limits.
+</Note>
+

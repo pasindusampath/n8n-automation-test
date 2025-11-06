@@ -1,0 +1,83 @@
+---
+title: 'CMS Integration Examples'
+description: 'Integrate with popular CMS platforms'
+---
+
+## WordPress Integration
+
+```php
+// WordPress Plugin Hook
+add_action('publish_post', 'auto_publish_to_nextjs');
+
+function auto_publish_to_nextjs($post_id) {
+    $post = get_post($post_id);
+    
+    $data = array(
+        'blogs' => array(array(
+            'title' => $post->post_title,
+            'description' => get_the_excerpt($post_id),
+            'author' => get_the_author_meta('display_name', $post->post_author),
+            'date' => get_the_date('Y-m-d', $post_id),
+            'content' => $post->post_content
+        ))
+    );
+    
+    wp_remote_post('https://your-app.vercel.app/api/publish-blog', array(
+        'headers' => array('Content-Type' => 'application/json'),
+        'body' => json_encode($data)
+    ));
+}
+```
+
+## Contentful Webhook
+
+```typescript
+// Webhook handler
+export async function POST(request: Request) {
+  const webhook = await request.json();
+  
+  if (webhook.sys.type === 'Entry' && webhook.sys.contentType.sys.id === 'blogPost') {
+    const blog = {
+      title: webhook.fields.title['en-US'],
+      description: webhook.fields.description['en-US'],
+      author: webhook.fields.author['en-US'],
+      date: webhook.sys.createdAt.split('T')[0],
+      content: webhook.fields.content['en-US']
+    };
+    
+    await fetch('https://your-app.vercel.app/api/publish-blog', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ blogs: [blog] })
+    });
+  }
+  
+  return Response.json({ ok: true });
+}
+```
+
+## Strapi Integration
+
+```javascript
+// Strapi Lifecycle Hook
+module.exports = {
+  async afterCreate(event) {
+    const { result } = event;
+    
+    await fetch('https://your-app.vercel.app/api/publish-blog', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        blogs: [{
+          title: result.title,
+          description: result.description,
+          author: result.author.name,
+          date: result.publishedAt,
+          content: result.content
+        }]
+      })
+    });
+  }
+};
+```
+

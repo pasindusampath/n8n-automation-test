@@ -1,0 +1,152 @@
+---
+title: 'Troubleshooting'
+description: 'Common issues and solutions'
+---
+
+## Configuration Issues
+
+<AccordionGroup>
+  <Accordion title='Error: "Missing required environment variables"'>
+    **Cause:** Environment variables not set or not loaded
+    
+    **Solution:**
+    1. Verify variables exist in deployment platform
+    2. Check variable names (case-sensitive)
+    3. Redeploy after adding variables
+    4. For local: restart dev server after adding to `.env.local`
+  </Accordion>
+  
+  <Accordion title='Error: "configured": false'>
+    **Cause:** One or more environment variables missing
+    
+    **Solution:**
+    Check all three are set: `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`
+  </Accordion>
+</AccordionGroup>
+
+## GitHub API Issues
+
+<AccordionGroup>
+  <Accordion title='Error: "Failed to create branch"'>
+    **Possible Causes:**
+    - Invalid GitHub token
+    - Insufficient permissions (need `repo` scope)
+    - Repository doesn't exist
+    
+    **Solution:**
+    1. Verify token has `repo` scope
+    2. Check repository name and owner
+    3. Test token with: `curl -H "Authorization: token YOUR_TOKEN" https://api.github.com/user`
+  </Accordion>
+  
+  <Accordion title='Error: "Failed to create pull request"'>
+    **Possible Causes:**
+    - Branch already has open PR
+    - Network/API timeout
+    - Rate limiting
+    
+    **Solution:**
+    1. Check for existing PRs with same branch
+    2. Retry after a few seconds
+    3. Check GitHub API status
+  </Accordion>
+  
+  <Accordion title='Error: "Bad credentials"'>
+    **Cause:** Invalid or expired GitHub token
+    
+    **Solution:**
+    Generate new token and update environment variable
+  </Accordion>
+</AccordionGroup>
+
+## Deployment Issues
+
+<AccordionGroup>
+  <Accordion title="Build fails on Vercel/Netlify">
+    **Check:**
+    - Build logs for specific errors
+    - All dependencies in `package.json`
+    - TypeScript compilation locally: `npm run build`
+    
+    **Common fixes:**
+    ```bash
+    npm install  # Ensure all deps installed
+    rm -rf .next node_modules
+    npm install
+    npm run build
+    ```
+  </Accordion>
+  
+  <Accordion title="Function timeout">
+    **Cause:** Operation taking too long
+    
+    **Solution:**
+    - Use batch mode for multiple blogs
+    - Check GitHub API response times
+    - Upgrade deployment plan for longer timeouts
+  </Accordion>
+</AccordionGroup>
+
+## Content Issues
+
+<AccordionGroup>
+  <Accordion title="Blog not appearing after merge">
+    **Check:**
+    1. PR actually merged?
+    2. Content Collections regenerated?
+    3. Deployment triggered?
+    
+    **Solution:**
+    - Trigger manual deployment
+    - Check build logs
+    - Verify file in `content/posts/`
+  </Accordion>
+  
+  <Accordion title="Slug collision">
+    **Cause:** Blog with same slug already exists
+    
+    **Solution:**
+    - Modify title slightly
+    - Or manually resolve conflict in PR
+  </Accordion>
+</AccordionGroup>
+
+## Debug Steps
+
+<Steps>
+  <Step title="Check API Status">
+    ```bash
+    curl https://your-app.vercel.app/api/publish-blog
+    ```
+  </Step>
+  
+  <Step title="Test Locally">
+    ```bash
+    npm run dev
+    curl http://localhost:3000/api/publish-blog
+    ```
+  </Step>
+  
+  <Step title="Check Logs">
+    Vercel: Project → Functions → View Logs
+  </Step>
+  
+  <Step title="Verify GitHub Access">
+    ```bash
+    curl -H "Authorization: token YOUR_TOKEN" \
+      https://api.github.com/repos/OWNER/REPO
+    ```
+  </Step>
+</Steps>
+
+## Getting Help
+
+<CardGroup cols={2}>
+  <Card title="GitHub Issues" icon="github" href="https://github.com/yourusername/my-app/issues">
+    Report bugs or ask questions
+  </Card>
+  <Card title="Documentation" icon="book" href="/introduction">
+    Review full documentation
+  </Card>
+</CardGroup>
+

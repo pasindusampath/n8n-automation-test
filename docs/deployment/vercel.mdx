@@ -1,0 +1,390 @@
+---
+title: 'Deploy to Vercel'
+description: 'Complete guide to deploying on Vercel'
+---
+
+## Why Vercel?
+
+Vercel is the perfect platform for this system:
+
+<CardGroup cols={2}>
+  <Card title="Built for Next.js" icon="nextjs">
+    Optimized specifically for Next.js applications
+  </Card>
+  <Card title="Serverless Functions" icon="server">
+    API routes run as serverless functions automatically
+  </Card>
+  <Card title="Instant Deployments" icon="rocket">
+    Deploy in seconds with git integration
+  </Card>
+  <Card title="Global CDN" icon="globe">
+    Automatic edge deployment worldwide
+  </Card>
+</CardGroup>
+
+## Deployment Steps
+
+<Steps>
+  <Step title="Push to GitHub">
+    Ensure your code is pushed to a GitHub repository:
+    
+    ```bash
+    git add .
+    git commit -m "Add blog publishing system"
+    git push origin main
+    ```
+  </Step>
+  
+  <Step title="Import to Vercel">
+    1. Go to [vercel.com/dashboard](https://vercel.com/dashboard)
+    2. Click **"Add New..."** → **"Project"**
+    3. Select **"Import Git Repository"**
+    4. Choose your repository from the list
+    5. Click **"Import"**
+  </Step>
+  
+  <Step title="Configure Project">
+    Vercel auto-detects Next.js settings:
+    
+    - **Framework Preset**: Next.js
+    - **Root Directory**: `./`
+    - **Build Command**: `next build` (or `npm run build`)
+    - **Output Directory**: `.next`
+    - **Install Command**: `npm install`
+    
+    <Check>Usually no changes needed!</Check>
+  </Step>
+  
+  <Step title="Add Environment Variables">
+    Click **"Environment Variables"** and add:
+    
+    | Variable | Value | Environment |
+    |----------|-------|-------------|
+    | `GITHUB_TOKEN` | Your GitHub PAT | Production, Preview, Development |
+    | `GITHUB_OWNER` | Your username | Production, Preview, Development |
+    | `GITHUB_REPO` | Your repo name | Production, Preview, Development |
+    
+    <Warning>
+      Make sure to add variables to **all environments** (Production, Preview, Development)
+    </Warning>
+  </Step>
+  
+  <Step title="Deploy">
+    Click **"Deploy"** and wait for the build to complete.
+    
+    ⏱️ First deployment takes ~2-3 minutes
+  </Step>
+</Steps>
+
+## Post-Deployment
+
+### Verify Deployment
+
+Once deployed, test your API:
+
+```bash
+curl https://your-app.vercel.app/api/publish-blog
+```
+
+Expected response:
+```json
+{
+  "status": "ok",
+  "configured": true,
+  "message": "Blog publishing API is ready"
+}
+```
+
+<Check>If configured is `true`, you're ready to publish!</Check>
+
+### Test Publishing
+
+Try publishing a test blog:
+
+```bash
+curl -X POST https://your-app.vercel.app/api/publish-blog \
+  -H "Content-Type: application/json" \
+  -d '{
+    "blogs": [{
+      "title": "Test Post from Vercel",
+      "description": "Testing the deployed system",
+      "author": "Vercel User",
+      "date": "2025-10-17",
+      "content": "# Test\n\nThis is a test from Vercel!"
+    }]
+  }'
+```
+
+Check your GitHub repository for the new PR!
+
+## Environment Variables in Depth
+
+<Tabs>
+  <Tab title="Via Dashboard">
+    1. Go to your project settings
+    2. Navigate to **"Settings"** → **"Environment Variables"**
+    3. Click **"Add New"**
+    4. Enter variable name and value
+    5. Select environments to apply to
+    6. Click **"Save"**
+  </Tab>
+  
+  <Tab title="Via CLI">
+    ```bash
+    # Install Vercel CLI
+    npm i -g vercel
+    
+    # Login
+    vercel login
+    
+    # Link project
+    vercel link
+    
+    # Add environment variables
+    vercel env add GITHUB_TOKEN production
+    vercel env add GITHUB_OWNER production
+    vercel env add GITHUB_REPO production
+    
+    # Redeploy with new variables
+    vercel --prod
+    ```
+  </Tab>
+  
+  <Tab title="Via vercel.json">
+    Create `vercel.json` (optional):
+    
+    ```json
+    {
+      "env": {
+        "GITHUB_OWNER": "@github-owner",
+        "GITHUB_REPO": "@github-repo"
+      }
+    }
+    ```
+    
+    <Note>
+      Still add sensitive tokens via dashboard, not in files!
+    </Note>
+  </Tab>
+</Tabs>
+
+## Automatic Deployments
+
+<AccordionGroup>
+  <Accordion title="Production Deployments">
+    - Triggered by pushes to `main` branch
+    - Uses **Production** environment variables
+    - Available at: `https://your-app.vercel.app`
+    - All features enabled
+  </Accordion>
+  
+  <Accordion title="Preview Deployments">
+    - Triggered by pushes to any other branch
+    - Each PR gets a unique URL
+    - Uses **Preview** environment variables
+    - Perfect for testing changes
+    - URL format: `https://your-app-git-branch.vercel.app`
+  </Accordion>
+  
+  <Accordion title="Development">
+    - Local development only
+    - Uses `.env.local` or **Development** env vars from Vercel
+    - Run with: `vercel dev`
+  </Accordion>
+</AccordionGroup>
+
+## Custom Domain
+
+<Steps>
+  <Step title="Go to Domains">
+    In your project, navigate to **"Settings"** → **"Domains"**
+  </Step>
+  
+  <Step title="Add Domain">
+    Enter your domain (e.g., `blog.example.com`)
+  </Step>
+  
+  <Step title="Configure DNS">
+    Add the provided DNS records to your domain provider:
+    
+    - **Type**: CNAME
+    - **Name**: `blog` (or `@` for apex)
+    - **Value**: `cname.vercel-dns.com`
+  </Step>
+  
+  <Step title="Verify">
+    Vercel automatically verifies and configures SSL
+  </Step>
+</Steps>
+
+Your API will be available at: `https://blog.example.com/api/publish-blog`
+
+## CI/CD Integration
+
+### GitHub Actions (Optional)
+
+Create `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Run tests
+        run: npm test
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+```
+
+## Monitoring & Logs
+
+<Tabs>
+  <Tab title="Function Logs">
+    View logs in real-time:
+    
+    1. Go to your project dashboard
+    2. Click **"Functions"**
+    3. Select `/api/publish-blog`
+    4. View invocations and logs
+  </Tab>
+  
+  <Tab title="Analytics">
+    Track API usage:
+    
+    1. Navigate to **"Analytics"**
+    2. View requests, errors, and performance
+    3. Monitor function execution times
+  </Tab>
+  
+  <Tab title="CLI Logs">
+    Stream logs via CLI:
+    
+    ```bash
+    vercel logs your-app.vercel.app --follow
+    ```
+  </Tab>
+</Tabs>
+
+## Performance Optimization
+
+<CardGroup cols={2}>
+  <Card title="Edge Runtime" icon="bolt">
+    Enable for faster cold starts:
+    
+    ```typescript
+    export const runtime = 'edge';
+    ```
+  </Card>
+  
+  <Card title="Response Caching" icon="database">
+    Cache static responses:
+    
+    ```typescript
+    export const revalidate = 60; // 60 seconds
+    ```
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Build Fails">
+    **Check:**
+    - All dependencies in `package.json`
+    - TypeScript compilation errors
+    - Build logs in deployment details
+    
+    **Solution:**
+    ```bash
+    # Test build locally
+    npm run build
+    ```
+  </Accordion>
+  
+  <Accordion title="Environment Variables Not Working">
+    **Check:**
+    - Variables added to correct environment
+    - No typos in variable names
+    - Redeployed after adding variables
+    
+    **Solution:** Trigger new deployment after adding env vars
+  </Accordion>
+  
+  <Accordion title="Function Timeout">
+    **Cause:** Vercel has 10-60s timeout limits
+    
+    **Solution:**
+    - Upgrade plan for longer timeouts
+    - Optimize GitHub API calls
+    - Use batch mode for multiple blogs
+  </Accordion>
+</AccordionGroup>
+
+## Vercel CLI Reference
+
+```bash
+# Install CLI
+npm i -g vercel
+
+# Login
+vercel login
+
+# Link project
+vercel link
+
+# Deploy to preview
+vercel
+
+# Deploy to production
+vercel --prod
+
+# View logs
+vercel logs
+
+# List environment variables
+vercel env ls
+
+# Pull environment variables
+vercel env pull .env.local
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Environment Variables" icon="key" href="/deployment/environment-variables">
+    Detailed environment configuration
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/deployment/troubleshooting">
+    Common issues and solutions
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/publish-blog">
+    Use your deployed API
+  </Card>
+  <Card title="Examples" icon="book" href="/examples/single-blog">
+    Integration examples
+  </Card>
+</CardGroup>
+

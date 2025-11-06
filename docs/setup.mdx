@@ -1,0 +1,339 @@
+---
+title: 'Setup'
+description: 'Detailed setup instructions for the Blog Publishing System'
+---
+
+## System Requirements
+
+- **Node.js**: Version 18 or higher
+- **Next.js**: Version 13.4 or higher
+- **GitHub Account**: With repository access
+- **Deployment Platform**: Vercel, Netlify, or similar (optional)
+
+## Project Structure
+
+The Blog Publishing System consists of several key components:
+
+```
+my-app/
+├── src/
+│   ├── app/
+│   │   └── api/
+│   │       └── publish-blog/
+│   │           └── route.ts          # API endpoint
+│   └── lib/
+│       └── services/
+│           ├── blog-converter.ts     # JSON to Markdown conversion
+│           ├── github-file-service.ts # GitHub API file operations
+│           ├── github-service.ts     # PR management
+│           └── serverless-blog-publisher.ts # Main orchestrator
+├── content/
+│   └── posts/                        # Blog post markdown files
+├── content-collections.ts            # Content Collections config
+└── docs/                             # Documentation (Mintlify)
+```
+
+## Installation Steps
+
+### 1. Dependencies
+
+The system requires the following npm package:
+
+```bash
+npm install @octokit/rest
+```
+
+<Accordion title="Why @octokit/rest?">
+  `@octokit/rest` is the official GitHub REST API client. We use it to:
+  - Create and manage branches
+  - Create and update files
+  - Create pull requests
+  - Add labels and reviewers
+  
+  All operations are done via API, making it perfect for serverless environments.
+</Accordion>
+
+### 2. GitHub Personal Access Token
+
+<Steps>
+  <Step title="Navigate to GitHub Settings">
+    Go to [GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)](https://github.com/settings/tokens)
+  </Step>
+  
+  <Step title="Generate New Token">
+    Click **"Generate new token (classic)"**
+  </Step>
+  
+  <Step title="Configure Token">
+    - **Note**: Give it a descriptive name (e.g., "Blog Publishing System - Production")
+    - **Expiration**: Choose based on your security requirements
+    - **Scopes**: Select the following:
+      - ✅ `repo` - Full control of private repositories
+        - ✅ `repo:status` - Access commit status
+        - ✅ `repo_deployment` - Access deployment status
+        - ✅ `public_repo` - Access public repositories
+        - ✅ `repo:invite` - Access repository invitations
+  </Step>
+  
+  <Step title="Generate and Copy">
+    Click **"Generate token"** and immediately copy it to a secure location
+    
+    <Warning>
+      You won't be able to see the token again! Store it securely.
+    </Warning>
+  </Step>
+</Steps>
+
+### 3. Environment Variables
+
+Create environment variable files for different environments:
+
+<CodeGroup>
+
+```bash .env.local
+# Local Development
+GITHUB_TOKEN=ghp_your_development_token_here
+GITHUB_OWNER=your-github-username
+GITHUB_REPO=my-app
+
+# Optional: API Authentication
+# API_AUTH_TOKEN=your_api_secret_token
+```
+
+```bash .env.production
+# Production (Vercel)
+GITHUB_TOKEN=ghp_your_production_token_here
+GITHUB_OWNER=your-github-username
+GITHUB_REPO=my-app
+```
+
+</CodeGroup>
+
+<Note>
+  Never commit `.env.local` or `.env.production` to version control!
+  Add them to your `.gitignore` file.
+</Note>
+
+### 4. Configure Content Collections
+
+Ensure your `content-collections.ts` is properly configured:
+
+```typescript content-collections.ts
+import { defineCollection, defineConfig } from "@content-collections/core";
+import { z } from "zod";
+import { marked } from "marked";
+
+const posts = defineCollection({
+  name: "posts",
+  directory: "content/posts",
+  include: "*.md",
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    author: z.string(),
+    date: z.string(),
+    published: z.boolean().default(true),
+  }),
+  transform: async (data) => {
+    const slug = data._meta.path.replace(/\.md$/, '');
+    const html = await marked(data.content);
+    return {
+      ...data,
+      slug,
+      url: `/blog/${slug}`,
+      html,
+    };
+  },
+});
+
+export default defineConfig({
+  collections: [posts],
+});
+```
+
+### 5. Verify Setup
+
+Run the verification script to ensure everything is configured correctly:
+
+```bash
+# Check API status
+curl http://localhost:3000/api/publish-blog
+
+# Expected response:
+{
+  "status": "ok",
+  "configured": true,
+  "message": "Blog publishing API is ready",
+  "requiredEnvVars": [
+    "GITHUB_TOKEN",
+    "GITHUB_OWNER",
+    "GITHUB_REPO"
+  ]
+}
+```
+
+<Check>If `configured: true`, you're all set!</Check>
+<Warning>If `configured: false`, check your environment variables</Warning>
+
+## Deployment Configuration
+
+### Vercel
+
+<Steps>
+  <Step title="Connect Repository">
+    1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+    2. Click "Add New Project"
+    3. Import your GitHub repository
+  </Step>
+  
+  <Step title="Configure Build Settings">
+    Vercel should auto-detect Next.js settings:
+    - **Framework Preset**: Next.js
+    - **Build Command**: `next build`
+    - **Output Directory**: `.next`
+  </Step>
+  
+  <Step title="Add Environment Variables">
+    In the "Environment Variables" section, add:
+    
+    | Key | Value | Environment |
+    |-----|-------|-------------|
+    | `GITHUB_TOKEN` | Your GitHub token | Production, Preview |
+    | `GITHUB_OWNER` | Your username | Production, Preview |
+    | `GITHUB_REPO` | Your repo name | Production, Preview |
+  </Step>
+  
+  <Step title="Deploy">
+    Click **"Deploy"** and wait for the build to complete
+  </Step>
+</Steps>
+
+### Netlify
+
+<Steps>
+  <Step title="Connect Repository">
+    1. Go to [Netlify Dashboard](https://app.netlify.com/)
+    2. Click "Add new site" → "Import an existing project"
+    3. Connect your GitHub repository
+  </Step>
+  
+  <Step title="Configure Build Settings">
+    - **Build command**: `next build`
+    - **Publish directory**: `.next`
+  </Step>
+  
+  <Step title="Add Environment Variables">
+    Go to Site settings → Environment variables and add:
+    - `GITHUB_TOKEN`
+    - `GITHUB_OWNER`
+    - `GITHUB_REPO`
+  </Step>
+  
+  <Step title="Deploy">
+    Click **"Deploy site"**
+  </Step>
+</Steps>
+
+### Railway
+
+<Steps>
+  <Step title="New Project">
+    1. Go to [Railway Dashboard](https://railway.app/)
+    2. Click "New Project" → "Deploy from GitHub repo"
+  </Step>
+  
+  <Step title="Add Environment Variables">
+    Add `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`
+  </Step>
+  
+  <Step title="Deploy">
+    Railway will automatically deploy your application
+  </Step>
+</Steps>
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="Token Security">
+    - Use different tokens for development and production
+    - Set appropriate expiration dates
+    - Regularly rotate tokens
+    - Never commit tokens to version control
+    - Use environment variables only
+  </Accordion>
+  
+  <Accordion title="API Authentication">
+    Add authentication to your API endpoint:
+    
+    ```typescript
+    const authToken = request.headers.get('Authorization');
+    if (authToken !== `Bearer ${process.env.API_AUTH_TOKEN}`) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Rate Limiting">
+    Consider adding rate limiting to prevent abuse:
+    
+    ```bash
+    npm install @upstash/ratelimit @upstash/redis
+    ```
+  </Accordion>
+  
+  <Accordion title="CORS Configuration">
+    If accessing from external domains, configure CORS properly
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Error: Missing required environment variables">
+    **Solution**: Ensure all three environment variables are set:
+    - `GITHUB_TOKEN`
+    - `GITHUB_OWNER`
+    - `GITHUB_REPO`
+    
+    Restart your development server after adding them.
+  </Accordion>
+  
+  <Accordion title="Error: Failed to create branch">
+    **Possible causes**:
+    - Invalid GitHub token
+    - Insufficient permissions (need `repo` scope)
+    - Repository doesn't exist or token doesn't have access
+    
+    **Solution**: Verify your token and permissions
+  </Accordion>
+  
+  <Accordion title="Error: Failed to create pull request">
+    **Possible causes**:
+    - Branch name conflicts
+    - Network issues
+    - Rate limiting
+    
+    **Solution**: Check GitHub status and API rate limits
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Architecture Overview" icon="diagram-project" href="/architecture/overview">
+    Learn how the system works
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/publish-blog">
+    Explore the API endpoints
+  </Card>
+  <Card title="Examples" icon="book" href="/examples/single-blog">
+    See practical examples
+  </Card>
+  <Card title="Deployment Guide" icon="cloud" href="/deployment/vercel">
+    Deploy to production
+  </Card>
+</CardGroup>
+

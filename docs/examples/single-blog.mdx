@@ -1,0 +1,107 @@
+---
+title: 'Single Blog Example'
+description: 'Publish a single blog post'
+---
+
+## Basic Example
+
+The simplest way to publish a blog post:
+
+```bash
+curl -X POST https://your-app.vercel.app/api/publish-blog \
+  -H "Content-Type: application/json" \
+  -d '{
+    "blogs": [{
+      "title": "Getting Started with Next.js",
+      "description": "Learn the basics of Next.js",
+      "author": "John Doe",
+      "date": "2025-10-17",
+      "content": "# Getting Started\n\nNext.js is amazing..."
+    }]
+  }'
+```
+
+## JavaScript/TypeScript
+
+```typescript
+async function publishBlog() {
+  const response = await fetch('https://your-app.vercel.app/api/publish-blog', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      blogs: [{
+        title: "Getting Started with Next.js",
+        description: "Learn the basics of Next.js",
+        author: "John Doe",
+        date: "2025-10-17",
+        content: `# Getting Started with Next.js
+
+Next.js is a powerful React framework...
+
+## Features
+- Server-side rendering
+- Static generation
+- API routes`
+      }],
+      options: {
+        labels: ['blog', 'nextjs'],
+        reviewers: ['editor-username']
+      }
+    })
+  });
+
+  const result = await response.json();
+  
+  if (result.success) {
+    console.log('✅ Published:', result.results[0].prUrl);
+  } else {
+    console.error('❌ Error:', result.error);
+  }
+}
+```
+
+## With Options
+
+```json
+{
+  "blogs": [{
+    "title": "My Blog Post",
+    "description": "Description here",
+    "author": "Author Name",
+    "date": "2025-10-17",
+    "content": "# Content\n\nYour markdown here...",
+    "published": true
+  }],
+  "options": {
+    "reviewers": ["reviewer1", "reviewer2"],
+    "labels": ["blog", "featured"],
+    "baseBranch": "main"
+  }
+}
+```
+
+## Expected Response
+
+```json
+{
+  "success": true,
+  "results": [{
+    "success": true,
+    "message": "Blog post published successfully",
+    "slug": "getting-started-with-nextjs",
+    "branchName": "blog/getting-started-with-nextjs-1729180800000",
+    "prUrl": "https://github.com/username/my-app/pull/123",
+    "prNumber": 123
+  }],
+  "summary": {
+    "total": 1,
+    "succeeded": 1,
+    "failed": 0
+  }
+}
+```
+
+<Check>
+  Check your GitHub repository - a new PR should appear with your blog post!
+</Check>
+

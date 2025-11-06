@@ -1,0 +1,137 @@
+---
+title: Introduction
+description: 'Welcome to the Automated Blog Publishing System'
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.svg"
+  alt="Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.svg"
+  alt="Hero Dark"
+/>
+
+## What is the Blog Publishing System?
+
+The Automated Blog Publishing System is a powerful, serverless solution that allows you to publish blog posts by simply sending JSON data to an API endpoint. The system handles everything from markdown conversion to GitHub integration.
+
+<CardGroup cols={2}>
+  <Card
+    title="Serverless Architecture"
+    icon="cloud"
+    href="/architecture/overview"
+  >
+    Built to work seamlessly on Vercel and other serverless platforms
+  </Card>
+  <Card
+    title="GitHub Integration"
+    icon="github"
+    href="/architecture/services"
+  >
+    Automatic PR creation with built-in review workflow
+  </Card>
+  <Card
+    title="Easy Integration"
+    icon="plug"
+    href="/examples/integration"
+  >
+    Works with any CMS or content management system
+  </Card>
+  <Card
+    title="Content Collections"
+    icon="book"
+    href="/architecture/workflow"
+  >
+    Automatic regeneration when PRs are merged
+  </Card>
+</CardGroup>
+
+## How It Works
+
+<Steps>
+  <Step title="Send JSON Data">
+    Send your blog post data in JSON format to the API endpoint
+  </Step>
+  <Step title="Automatic Conversion">
+    The system converts your JSON to Markdown with proper frontmatter
+  </Step>
+  <Step title="GitHub Operations">
+    Creates a new branch, commits the file, and pushes to GitHub
+  </Step>
+  <Step title="Pull Request">
+    Automatically creates a PR for review with labels and reviewers
+  </Step>
+  <Step title="Content Live">
+    Once merged, content-collections automatically regenerates and your blog is live
+  </Step>
+</Steps>
+
+## Key Features
+
+- **🚀 Serverless-First**: Works perfectly on Vercel, Netlify, and other platforms
+- **📝 JSON to Markdown**: Automatic conversion with YAML frontmatter
+- **🔄 Git Integration**: No local file system needed - all via GitHub API
+- **👥 Review Workflow**: Built-in PR workflow with reviewers and labels
+- **⚡ Fast Publishing**: Publish blogs in seconds with a single API call
+- **🔐 Secure**: Environment-based configuration with GitHub tokens
+- **📦 Batch Support**: Publish multiple blogs at once
+- **🎯 Type-Safe**: Full TypeScript support
+
+## Use Cases
+
+<AccordionGroup>
+  <Accordion icon="newspaper" title="Content Management System Integration">
+    Connect your CMS (WordPress, Contentful, Strapi) to automatically publish content to your Next.js blog
+  </Accordion>
+  <Accordion icon="robot" title="Automated Publishing">
+    Schedule blog posts or trigger publishing from external events
+  </Accordion>
+  <Accordion icon="users" title="Multi-Author Blogs">
+    Allow multiple authors to submit content that goes through a review process
+  </Accordion>
+  <Accordion icon="clock" title="Editorial Workflow">
+    Use GitHub's PR system for content review and approval
+  </Accordion>
+</AccordionGroup>
+
+## Quick Example
+
+```json
+POST /api/publish-blog
+{
+  "blogs": [
+    {
+      "title": "My First Blog Post",
+      "description": "An introduction to our blog",
+      "author": "John Doe",
+      "date": "2025-10-17",
+      "content": "# Welcome\n\nThis is my first post..."
+    }
+  ]
+}
+```
+
+<Check>Response includes PR URL, branch name, and slug</Check>
+
+## Ready to Get Started?
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart Guide"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Get up and running in 5 minutes
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/introduction"
+  >
+    Explore the complete API documentation
+  </Card>
+</CardGroup>
+

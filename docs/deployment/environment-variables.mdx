@@ -1,0 +1,66 @@
+---
+title: 'Environment Variables'
+description: 'Configure environment variables for deployment'
+---
+
+## Required Variables
+
+<ParamField path="GITHUB_TOKEN" type="string" required>
+  GitHub Personal Access Token with `repo` permissions
+  
+  **How to get:**
+  1. Go to [GitHub Settings → Tokens](https://github.com/settings/tokens)
+  2. Generate new token (classic)
+  3. Select `repo` scope
+  4. Copy the token
+</ParamField>
+
+<ParamField path="GITHUB_OWNER" type="string" required>
+  GitHub username or organization name
+  
+  **Example:** `johndoe` or `my-org`
+</ParamField>
+
+<ParamField path="GITHUB_REPO" type="string" required>
+  Repository name
+  
+  **Example:** `my-app`
+</ParamField>
+
+## Optional Variables
+
+<ParamField path="API_AUTH_TOKEN" type="string">
+  Optional bearer token for API authentication
+</ParamField>
+
+## Platform-Specific Setup
+
+<Tabs>
+  <Tab title="Vercel">
+    Project Settings → Environment Variables → Add New
+    
+    Add to all environments: Production, Preview, Development
+  </Tab>
+  
+  <Tab title="Netlify">
+    Site Settings → Build & Deploy → Environment → Environment Variables
+  </Tab>
+  
+  <Tab title="Local (.env.local)">
+    ```bash
+    GITHUB_TOKEN=ghp_xxxxxxxxxxxx
+    GITHUB_OWNER=yourusername
+    GITHUB_REPO=my-app
+    ```
+  </Tab>
+</Tabs>
+
+## Security Best Practices
+
+<Warning>
+- Never commit tokens to git
+- Use different tokens for dev/prod
+- Rotate tokens regularly
+- Set appropriate expiration dates
+</Warning>
+

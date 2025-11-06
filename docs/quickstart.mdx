@@ -1,0 +1,197 @@
+---
+title: 'Quickstart'
+description: 'Get started with the Blog Publishing System in 5 minutes'
+---
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+<CardGroup cols={2}>
+  <Card title="Next.js App" icon="react">
+    A Next.js application with Content Collections
+  </Card>
+  <Card title="GitHub Account" icon="github">
+    Access to your GitHub repository
+  </Card>
+  <Card title="Vercel Account" icon="cloud" color="#000">
+    Optional: For deploying your application
+  </Card>
+  <Card title="Node.js" icon="node-js" color="#339933">
+    Node.js 18+ installed locally
+  </Card>
+</CardGroup>
+
+## Installation
+
+<Steps>
+  <Step title="Install Dependencies">
+    Install the required packages for GitHub API integration:
+    
+    ```bash
+    npm install @octokit/rest
+    ```
+    
+    <Note>
+      The system is already included in your project under `src/lib/services/`
+    </Note>
+  </Step>
+
+  <Step title="Create GitHub Personal Access Token">
+    1. Go to [GitHub Settings → Tokens](https://github.com/settings/tokens)
+    2. Click **"Generate new token (classic)"**
+    3. Give it a descriptive name: `Blog Publishing System`
+    4. Select the `repo` scope (full control of repositories)
+    5. Click **"Generate token"**
+    6. **Copy the token** - you won't see it again!
+    
+    <Warning>
+      Keep your token secure! Never commit it to version control.
+    </Warning>
+  </Step>
+
+  <Step title="Configure Environment Variables">
+    Create a `.env.local` file in your project root:
+    
+    ```bash .env.local
+    GITHUB_TOKEN=ghp_your_token_here
+    GITHUB_OWNER=your-github-username
+    GITHUB_REPO=my-app
+    ```
+    
+    Replace the values:
+    - `GITHUB_TOKEN`: Your personal access token from step 2
+    - `GITHUB_OWNER`: Your GitHub username or organization
+    - `GITHUB_REPO`: Your repository name
+  </Step>
+
+  <Step title="Test Locally">
+    Start your development server:
+    
+    ```bash
+    npm run dev
+    ```
+    
+    Check if the API is configured:
+    
+    ```bash
+    curl http://localhost:3000/api/publish-blog
+    ```
+    
+    <Check>
+      You should see: `"configured": true, "message": "Blog publishing API is ready"`
+    </Check>
+  </Step>
+
+  <Step title="Publish Your First Blog">
+    Send a test blog post:
+    
+    ```bash
+    curl -X POST http://localhost:3000/api/publish-blog \
+      -H "Content-Type: application/json" \
+      -d '{
+        "blogs": [{
+          "title": "My First Automated Blog Post",
+          "description": "Testing the automated publishing system",
+          "author": "Your Name",
+          "date": "2025-10-17",
+          "content": "# Hello World\n\nThis is my first blog post!"
+        }]
+      }'
+    ```
+    
+    <Check>
+      Check your GitHub repository - you should see a new Pull Request!
+    </Check>
+  </Step>
+</Steps>
+
+## Deploy to Vercel
+
+<Tabs>
+  <Tab title="Vercel Dashboard">
+    1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+    2. Click **"Add New Project"**
+    3. Import your GitHub repository
+    4. Add environment variables:
+       - `GITHUB_TOKEN`
+       - `GITHUB_OWNER`
+       - `GITHUB_REPO`
+    5. Click **"Deploy"**
+  </Tab>
+
+  <Tab title="Vercel CLI">
+    ```bash
+    # Install Vercel CLI
+    npm i -g vercel
+
+    # Deploy
+    vercel
+
+    # Add environment variables
+    vercel env add GITHUB_TOKEN
+    vercel env add GITHUB_OWNER
+    vercel env add GITHUB_REPO
+
+    # Deploy to production
+    vercel --prod
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+  After deployment, your API will be available at `https://your-app.vercel.app/api/publish-blog`
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api-reference/publish-blog"
+  >
+    Learn about all API parameters and options
+  </Card>
+  <Card
+    title="Examples"
+    icon="book"
+    href="/examples/single-blog"
+  >
+    Explore code examples and use cases
+  </Card>
+  <Card
+    title="Architecture"
+    icon="diagram-project"
+    href="/architecture/overview"
+  >
+    Understand how the system works
+  </Card>
+  <Card
+    title="Troubleshooting"
+    icon="wrench"
+    href="/deployment/troubleshooting"
+  >
+    Common issues and solutions
+  </Card>
+</CardGroup>
+
+## Need Help?
+
+<CardGroup cols={2}>
+  <Card
+    title="Documentation"
+    icon="book-open"
+    href="/introduction"
+  >
+    Read the full documentation
+  </Card>
+  <Card
+    title="GitHub Issues"
+    icon="github"
+    href="https://github.com/yourusername/my-app/issues"
+  >
+    Report bugs or request features
+  </Card>
+</CardGroup>
+
