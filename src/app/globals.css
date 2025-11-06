@@ -40,3 +40,168 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Enhanced prose styling for markdown content */
+.prose {
+  color: rgb(55, 65, 81);
+}
+
+.prose.max-w-none {
+  max-width: none;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-weight: 700;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.2;
+}
+
+.prose h1 {
+  font-size: 2.25em;
+}
+
+.prose h2 {
+  font-size: 1.875em;
+}
+
+.prose h3 {
+  font-size: 1.5em;
+}
+
+.prose h4 {
+  font-size: 1.25em;
+}
+
+.prose p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  line-height: 1.75;
+}
+
+.prose ul,
+.prose ol {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose ol {
+  list-style-type: decimal;
+}
+
+.prose code {
+  background-color: rgb(243, 244, 246);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.prose pre {
+  background-color: rgb(17, 24, 39);
+  color: rgb(243, 244, 246);
+  padding: 1em;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.prose blockquote {
+  border-left: 4px solid rgb(59, 130, 246);
+  padding-left: 1.5rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-style: italic;
+  background-color: rgb(249, 250, 251);
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.prose a {
+  color: rgb(37, 99, 235);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.prose a:hover {
+  text-decoration: underline;
+}
+
+.prose img {
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.prose hr {
+  border-color: rgb(209, 213, 219);
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+
+.prose strong {
+  font-weight: 700;
+  color: rgb(17, 24, 39);
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .prose {
+    color: rgb(209, 213, 219);
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    color: rgb(255, 255, 255);
+  }
+
+  .prose code {
+    background-color: rgb(31, 41, 55);
+    color: rgb(96, 165, 250);
+  }
+
+  .prose pre {
+    background-color: rgb(31, 41, 55);
+  }
+
+  .prose blockquote {
+    background-color: rgb(17, 24, 39);
+    border-left-color: rgb(59, 130, 246);
+  }
+
+  .prose a {
+    color: rgb(96, 165, 250);
+  }
+
+  .prose strong {
+    color: rgb(255, 255, 255);
+  }
+
+  .prose hr {
+    border-color: rgb(55, 65, 81);
+  }
+}

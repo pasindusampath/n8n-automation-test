@@ -3,6 +3,12 @@ import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import type { BlogPost } from "../../types/blog";
 
+// Configure marked for better HTML output
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+});
+
 // Re-export for backward compatibility
 export type JsonBlogPost = BlogPost;
 
@@ -57,7 +63,7 @@ async function processJsonFile(filePath: string, filename: string): Promise<Blog
       const title = output.title || 'Untitled Post';
       const slug = generateSlug(title);
       
-      // Convert markdown content to HTML (using async marked like content-collections.ts)
+      // Convert markdown content to HTML with proper formatting
       const html = await marked(output.blog_post || '');
       
       posts.push({
