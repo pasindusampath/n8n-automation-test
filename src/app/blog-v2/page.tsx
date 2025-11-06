@@ -2,7 +2,7 @@ import { allPosts } from "../../../.content-collections/generated/index.js";
 import { getAllJsonBlogPosts } from "../../lib/services/json-blog-service";
 import Link from "next/link";
 import type { BlogPost } from "../../types/blog";
-import { hasTags } from "../../types/blog";
+import { hasTags, normalizePost } from "../../types/blog";
 
 interface BlogV2PageProps {
   searchParams: Promise<{
@@ -15,14 +15,17 @@ export default async function BlogV2Page({ searchParams }: BlogV2PageProps) {
   // Get JSON blog posts
   const jsonPosts = await getAllJsonBlogPosts();
   
+  // Normalize markdown posts from Content Collections
+  const normalizedMarkdownPosts = allPosts.map(post => normalizePost(post as any));
+  
   // Create a map of markdown post slugs to avoid duplicates
-  const markdownSlugs = new Set(allPosts.map((post: BlogPost) => post.slug));
+  const markdownSlugs = new Set(normalizedMarkdownPosts.map((post: BlogPost) => post.slug));
   
   // Filter out JSON posts that have conflicting slugs with markdown posts
   const uniqueJsonPosts = jsonPosts.filter((post: BlogPost) => !markdownSlugs.has(post.slug));
   
   // Merge both sources and sort by date (newest first)
-  const allMergedPosts: BlogPost[] = [...(allPosts as BlogPost[]), ...uniqueJsonPosts];
+  const allMergedPosts: BlogPost[] = [...normalizedMarkdownPosts, ...uniqueJsonPosts];
   
   // Apply search filter if provided
   const resolvedSearchParams = await searchParams;

@@ -3,7 +3,7 @@ import { getAllJsonBlogPosts, getJsonBlogPostBySlug } from "../../../lib/service
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BlogPost } from "../../../types/blog";
-import { hasTags } from "../../../types/blog";
+import { hasTags, normalizePost } from "../../../types/blog";
 import ScrollToTopButton from "../../../components/ScrollToTopButton";
 
 interface BlogPostPageProps {
@@ -31,10 +31,13 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
   const { slug } = await params;
   
   // Check markdown posts first (they take precedence)
-  let post: BlogPost | undefined = allPosts.find((post) => post.slug === slug) as BlogPost | undefined;
+  let post: BlogPost | undefined = undefined;
+  const markdownPost = allPosts.find((post) => post.slug === slug);
   
-  // If not found, check JSON posts
-  if (!post) {
+  if (markdownPost) {
+    post = normalizePost(markdownPost as any);
+  } else {
+    // If not found, check JSON posts
     post = await getJsonBlogPostBySlug(slug);
   }
 
@@ -54,10 +57,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
   
   // Check markdown posts first (they take precedence)
-  let post: BlogPost | undefined = allPosts.find((post) => post.slug === slug) as BlogPost | undefined;
+  let post: BlogPost | undefined = undefined;
+  const markdownPost = allPosts.find((post) => post.slug === slug);
   
-  // If not found, check JSON posts
-  if (!post) {
+  if (markdownPost) {
+    post = normalizePost(markdownPost as any);
+  } else {
+    // If not found, check JSON posts
     post = await getJsonBlogPostBySlug(slug);
   }
 

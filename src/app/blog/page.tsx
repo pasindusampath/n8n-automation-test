@@ -1,6 +1,8 @@
 import { allPosts } from "../../../.content-collections/generated/index.js";
 import { getAllJsonBlogPosts } from "../../lib/services/json-blog-service";
 import Link from "next/link";
+import type { BlogPost } from "../../types/blog";
+import { normalizePost } from "../../types/blog";
 
 interface BlogPageProps {
   searchParams: Promise<{
@@ -12,15 +14,18 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   // Get JSON blog posts
   const jsonPosts = await getAllJsonBlogPosts();
   
+  // Normalize markdown posts from Content Collections
+  const normalizedMarkdownPosts = allPosts.map(post => normalizePost(post as any));
+  
   // Create a map of markdown post slugs to avoid duplicates
-  const markdownSlugs = new Set(allPosts.map(post => post.slug));
+  const markdownSlugs = new Set(normalizedMarkdownPosts.map((post: BlogPost) => post.slug));
   
   // Filter out JSON posts that have conflicting slugs with markdown posts
   // (markdown posts take precedence)
-  const uniqueJsonPosts = jsonPosts.filter(post => !markdownSlugs.has(post.slug));
+  const uniqueJsonPosts = jsonPosts.filter((post: BlogPost) => !markdownSlugs.has(post.slug));
   
   // Merge both sources and sort by date (newest first)
-  const allMergedPosts = [...allPosts, ...uniqueJsonPosts];
+  const allMergedPosts: BlogPost[] = [...normalizedMarkdownPosts, ...uniqueJsonPosts];
   const sortedPosts = allMergedPosts.sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
