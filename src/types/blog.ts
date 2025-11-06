@@ -65,7 +65,7 @@ export function normalizePost(post: ContentCollectionsPost | BlogPost): BlogPost
   }
   
   // Convert Content Collections post to BlogPost
-  return {
+  const normalized: BlogPost = {
     title: post.title,
     description: post.description,
     author: post.author,
@@ -74,9 +74,21 @@ export function normalizePost(post: ContentCollectionsPost | BlogPost): BlogPost
     slug: post.slug,
     url: post.url,
     html: post.html,
-    tags: 'tags' in post ? post.tags : undefined,
-    meta_description: 'meta_description' in post ? post.meta_description : undefined,
-    outline: 'outline' in post ? post.outline : undefined,
   };
+  
+  // Add optional fields if they exist
+  if ('tags' in post && Array.isArray(post.tags)) {
+    normalized.tags = post.tags as string[];
+  }
+  
+  if ('meta_description' in post && typeof post.meta_description === 'string') {
+    normalized.meta_description = post.meta_description;
+  }
+  
+  if ('outline' in post && Array.isArray(post.outline)) {
+    normalized.outline = post.outline as string[];
+  }
+  
+  return normalized;
 }
 
