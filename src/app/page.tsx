@@ -1,13 +1,15 @@
 import Link from "next/link";
-import { allPosts } from "../.content-collections/generated";
 import { getAllJsonBlogPosts } from "../lib/services/json-blog-service";
+import { allPosts } from "../../.content-collections/generated/index.js";
+import type { BlogPost } from "../types/blog";
+import { hasTags } from "../types/blog";
 
 export default async function Home() {
   // Get recent posts (markdown + JSON)
   const jsonPosts = await getAllJsonBlogPosts();
-  const markdownSlugs = new Set(allPosts.map(post => post.slug));
-  const uniqueJsonPosts = jsonPosts.filter(post => !markdownSlugs.has(post.slug));
-  const allMergedPosts = [...allPosts, ...uniqueJsonPosts];
+  const markdownSlugs = new Set((allPosts as BlogPost[]).map((post: BlogPost) => post.slug));
+  const uniqueJsonPosts = jsonPosts.filter((post: BlogPost) => !markdownSlugs.has(post.slug));
+  const allMergedPosts: BlogPost[] = [...(allPosts as BlogPost[]), ...uniqueJsonPosts];
   const recentPosts = allMergedPosts
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 6);

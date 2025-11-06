@@ -1,4 +1,4 @@
-import { allPosts } from "../../../.content-collections/generated";
+import { allPosts } from "../../../.content-collections/generated/index.js";
 import { getAllJsonBlogPosts } from "../../lib/services/json-blog-service";
 import Link from "next/link";
 

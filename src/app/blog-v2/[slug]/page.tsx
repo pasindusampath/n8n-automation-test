@@ -1,9 +1,10 @@
-import { allPosts } from "../../../../.content-collections/generated";
+import { allPosts } from "../../../../.content-collections/generated/index.js";
 import { getAllJsonBlogPosts, getJsonBlogPostBySlug } from "../../../lib/services/json-blog-service";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { BlogPost } from "../../../types/blog";
 import { hasTags } from "../../../types/blog";
+import ScrollToTopButton from "../../../components/ScrollToTopButton";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -167,12 +168,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             </Link>
             
             <div className="flex gap-4">
-              <button
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
-                ↑ Top
-              </button>
+              <ScrollToTopButton />
             </div>
           </div>
         </div>
