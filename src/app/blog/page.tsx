@@ -1,4 +1,5 @@
 import { allPosts } from "../../../.content-collections/generated";
+import { getAllJsonBlogPosts } from "../../lib/services/json-blog-service";
 import Link from "next/link";
 
 interface BlogPageProps {
@@ -8,8 +9,19 @@ interface BlogPageProps {
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  // Sort posts by date (newest first)
-  const sortedPosts = [...allPosts].sort((a, b) => {
+  // Get JSON blog posts
+  const jsonPosts = await getAllJsonBlogPosts();
+  
+  // Create a map of markdown post slugs to avoid duplicates
+  const markdownSlugs = new Set(allPosts.map(post => post.slug));
+  
+  // Filter out JSON posts that have conflicting slugs with markdown posts
+  // (markdown posts take precedence)
+  const uniqueJsonPosts = jsonPosts.filter(post => !markdownSlugs.has(post.slug));
+  
+  // Merge both sources and sort by date (newest first)
+  const allMergedPosts = [...allPosts, ...uniqueJsonPosts];
+  const sortedPosts = allMergedPosts.sort((a, b) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 

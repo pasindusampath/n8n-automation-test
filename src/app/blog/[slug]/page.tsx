@@ -1,4 +1,5 @@
 import { allPosts } from "../../../../.content-collections/generated";
+import { getAllJsonBlogPosts, getJsonBlogPostBySlug } from "../../../lib/services/json-blog-service";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
@@ -9,14 +10,30 @@ interface BlogPostPageProps {
 }
 
 export async function generateStaticParams() {
-  return allPosts.map((post) => ({
-    slug: post.slug,
-  }));
+  // Get all posts from both sources
+  const jsonPosts = await getAllJsonBlogPosts();
+  const markdownSlugs = new Set(allPosts.map(post => post.slug));
+  const uniqueJsonPosts = jsonPosts.filter(post => !markdownSlugs.has(post.slug));
+  
+  // Combine all slugs
+  const allSlugs = [
+    ...allPosts.map(post => ({ slug: post.slug })),
+    ...uniqueJsonPosts.map(post => ({ slug: post.slug }))
+  ];
+  
+  return allSlugs;
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = allPosts.find((post) => post.slug === slug);
+  
+  // Check markdown posts first (they take precedence)
+  let post = allPosts.find((post) => post.slug === slug);
+  
+  // If not found, check JSON posts
+  if (!post) {
+    post = await getJsonBlogPostBySlug(slug);
+  }
 
   if (!post) {
     return {
@@ -32,7 +49,14 @@ export async function generateMetadata({ params }: BlogPostPageProps) {
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = allPosts.find((post) => post.slug === slug);
+  
+  // Check markdown posts first (they take precedence)
+  let post = allPosts.find((post) => post.slug === slug);
+  
+  // If not found, check JSON posts
+  if (!post) {
+    post = await getJsonBlogPostBySlug(slug);
+  }
 
   if (!post) {
     notFound();
